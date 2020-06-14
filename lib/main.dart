@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 import 'animations.dart';
+import 'content.dart';
 import 'selection_widgets.dart';
 import 'selection.dart';
 import 'switcher.dart';
 
+export 'animations.dart';
+export 'content.dart';
 export 'selection_widgets.dart';
 export 'selection.dart';
 export 'switcher.dart';
@@ -257,4 +260,43 @@ class BookstoresListTab extends StatefulWidget {
 
   @override
   _BookstoresListTabState createState() => _BookstoresListTabState();
+}
+
+class _BookstoresListTabState extends State<BookstoresListTab>
+    with AutomaticKeepAliveClientMixin<BookstoresListTab> {
+  // this mixin doesn't allow widget to redraw
+  @override
+  bool get wantKeepAlive => true;
+
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final bookstores = ContentControl.bookstores;
+
+    return ListView.builder(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 34.0, top: 4.0),
+      itemCount: bookstores.length,
+      itemBuilder: (context, index) {
+        return SelectableBookstoresTile(
+          bookstore: bookstores[index],
+          selectionController: widget.selectionController,
+          // specify object key that can be changed to re-render bookstore tile
+          key: ValueKey(index + widget.selectionController.switcher.value),
+          selected:
+              widget.selectionController.selectionSet.contains(bookstores[index].id),
+          onTap: () {},
+        );
+      },
+    );
+  }
 }
